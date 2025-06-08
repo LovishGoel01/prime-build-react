@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 import ImageCarousel from '../components/ImageCarousel';
 import ProjectCarousel from '../components/ProjectCarousel';
@@ -7,9 +8,19 @@ import { products, Product } from '../data/products';
 const Home = () => {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentProductIndex, setCurrentProductIndex] = useState(0);
 
   useEffect(() => {
     document.title = 'BuildCorp - Premier Construction Company';
+  }, []);
+
+  // Auto-rotate products every 3 seconds
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentProductIndex((prev) => (prev + 1) % Math.ceil(products.length / 6));
+    }, 3000);
+
+    return () => clearInterval(timer);
   }, []);
 
   const openProductModal = (product: Product) => {
@@ -29,7 +40,17 @@ const Home = () => {
     }
   };
 
-  const featuredProducts = products.slice(0, 6);
+  // Get 6 products starting from current index, cycling through all products
+  const getVisibleProducts = () => {
+    const visibleProducts = [];
+    for (let i = 0; i < 6; i++) {
+      const productIndex = (currentProductIndex * 6 + i) % products.length;
+      visibleProducts.push(products[productIndex]);
+    }
+    return visibleProducts;
+  };
+
+  const visibleProducts = getVisibleProducts();
 
   return (
     <div className="pt-16">
@@ -150,31 +171,47 @@ const Home = () => {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {featuredProducts.map((product) => (
-              <div
-                key={product.id}
-                onClick={() => openProductModal(product)}
-                className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group border border-gray-200 dark:border-gray-700"
-              >
-                <img
-                  src={product.image}
-                  alt={product.name}
-                  className="w-full h-48 object-cover rounded-t-lg group-hover:scale-105 transition-transform duration-300"
-                />
-                <div className="p-6">
-                  <span className="inline-block bg-primary/10 text-primary px-2 py-1 rounded text-sm font-medium mb-2">
-                    {product.category}
-                  </span>
-                  <h3 className="font-poppins text-lg font-semibold text-gray-900 dark:text-white mb-2">
-                    {product.name}
-                  </h3>
-                  <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-2">
-                    {product.description}
-                  </p>
+          <div className="relative">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-500">
+              {visibleProducts.map((product) => (
+                <div
+                  key={`${product.id}-${currentProductIndex}`}
+                  onClick={() => openProductModal(product)}
+                  className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group border border-gray-200 dark:border-gray-700 animate-fade-in"
+                >
+                  <img
+                    src={product.image}
+                    alt={product.name}
+                    className="w-full h-48 object-cover rounded-t-lg group-hover:scale-105 transition-transform duration-300"
+                  />
+                  <div className="p-6">
+                    <span className="inline-block bg-primary/10 text-primary px-2 py-1 rounded text-sm font-medium mb-2">
+                      {product.category}
+                    </span>
+                    <h3 className="font-poppins text-lg font-semibold text-gray-900 dark:text-white mb-2">
+                      {product.name}
+                    </h3>
+                    <p className="text-gray-600 dark:text-gray-300 text-sm line-clamp-2">
+                      {product.description}
+                    </p>
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))}
+            </div>
+
+            {/* Dots Indicator */}
+            <div className="flex justify-center mt-6 space-x-2">
+              {Array.from({ length: Math.ceil(products.length / 6) }).map((_, index) => (
+                <button
+                  key={index}
+                  onClick={() => setCurrentProductIndex(index)}
+                  className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                    index === currentProductIndex ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'
+                  }`}
+                  aria-label={`Go to product set ${index + 1}`}
+                />
+              ))}
+            </div>
           </div>
         </div>
       </section>
