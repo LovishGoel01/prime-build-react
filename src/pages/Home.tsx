@@ -17,7 +17,12 @@ const Home = () => {
   // Auto-rotate products every 3 seconds
   useEffect(() => {
     const timer = setInterval(() => {
-      setCurrentProductIndex((prev) => (prev + 1) % Math.ceil(products.length / 6));
+      setCurrentProductIndex((prev) => {
+        const totalSets = Math.ceil(products.length / 6);
+        const nextIndex = (prev + 1) % totalSets;
+        console.log('Product rotation:', prev, '->', nextIndex, 'Total sets:', totalSets);
+        return nextIndex;
+      });
     }, 3000);
 
     return () => clearInterval(timer);
@@ -43,14 +48,19 @@ const Home = () => {
   // Get 6 products starting from current index, cycling through all products
   const getVisibleProducts = () => {
     const visibleProducts = [];
+    const startIndex = currentProductIndex * 6;
+    
     for (let i = 0; i < 6; i++) {
-      const productIndex = (currentProductIndex * 6 + i) % products.length;
+      const productIndex = (startIndex + i) % products.length;
       visibleProducts.push(products[productIndex]);
     }
+    
+    console.log('Visible products for index', currentProductIndex, ':', visibleProducts.map(p => p.name));
     return visibleProducts;
   };
 
   const visibleProducts = getVisibleProducts();
+  const totalSets = Math.ceil(products.length / 6);
 
   return (
     <div className="pt-16">
@@ -169,13 +179,16 @@ const Home = () => {
             <p className="text-lg text-gray-600 dark:text-gray-300">
               High-quality construction materials and equipment for every project
             </p>
+            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
+              Set {currentProductIndex + 1} of {totalSets} (Auto-rotating every 3 seconds)
+            </p>
           </div>
 
           <div className="relative">
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 transition-all duration-500">
-              {visibleProducts.map((product) => (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+              {visibleProducts.map((product, index) => (
                 <div
-                  key={`${product.id}-${currentProductIndex}`}
+                  key={`${product.id}-${currentProductIndex}-${index}`}
                   onClick={() => openProductModal(product)}
                   className="bg-white dark:bg-gray-800 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 cursor-pointer group border border-gray-200 dark:border-gray-700 animate-fade-in"
                 >
@@ -199,18 +212,37 @@ const Home = () => {
               ))}
             </div>
 
-            {/* Dots Indicator */}
-            <div className="flex justify-center mt-6 space-x-2">
-              {Array.from({ length: Math.ceil(products.length / 6) }).map((_, index) => (
-                <button
-                  key={index}
-                  onClick={() => setCurrentProductIndex(index)}
-                  className={`w-3 h-3 rounded-full transition-all duration-200 ${
-                    index === currentProductIndex ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'
-                  }`}
-                  aria-label={`Go to product set ${index + 1}`}
-                />
-              ))}
+            {/* Navigation Controls */}
+            <div className="flex justify-center items-center mt-6 space-x-4">
+              <button
+                onClick={() => setCurrentProductIndex(prev => prev > 0 ? prev - 1 : totalSets - 1)}
+                className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-full p-2 transition-colors"
+                aria-label="Previous product set"
+              >
+                ←
+              </button>
+              
+              {/* Dots Indicator */}
+              <div className="flex space-x-2">
+                {Array.from({ length: totalSets }).map((_, index) => (
+                  <button
+                    key={index}
+                    onClick={() => setCurrentProductIndex(index)}
+                    className={`w-3 h-3 rounded-full transition-all duration-200 ${
+                      index === currentProductIndex ? 'bg-primary' : 'bg-gray-300 dark:bg-gray-600'
+                    }`}
+                    aria-label={`Go to product set ${index + 1}`}
+                  />
+                ))}
+              </div>
+              
+              <button
+                onClick={() => setCurrentProductIndex(prev => (prev + 1) % totalSets)}
+                className="bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 rounded-full p-2 transition-colors"
+                aria-label="Next product set"
+              >
+                →
+              </button>
             </div>
           </div>
         </div>
