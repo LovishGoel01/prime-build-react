@@ -49,21 +49,23 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center space-x-8">
+          <div className="hidden md:flex items-center space-x-2">
             {navLinks.map((link) => (
               <Link
                 key={link.to}
                 to={link.to}
-                className={`font-medium transition-colors duration-200 ${
+                className={`px-4 py-2 rounded-full font-medium transition-all duration-300 ${
                   isActive(link.to)
-                    ? 'text-primary border-b-2 border-primary'
-                    : 'text-gray-700 dark:text-gray-300 hover:text-primary dark:hover:text-primary'
+                    ? 'bg-primary text-white shadow-md'
+                    : 'text-gray-700 dark:text-gray-300 hover:bg-primary hover:text-white hover:shadow-md'
                 }`}
               >
                 {link.label}
               </Link>
             ))}
-            <ThemeToggle />
+            <div className="ml-4">
+              <ThemeToggle />
+            </div>
           </div>
 
           {/* Mobile menu button */}
@@ -87,10 +89,10 @@ const Navbar = () => {
                   key={link.to}
                   to={link.to}
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className={`block px-3 py-2 rounded-md text-base font-medium ${
+                  className={`block px-3 py-2 rounded-md text-base font-medium transition-all duration-300 ${
                     isActive(link.to)
-                      ? 'text-primary bg-primary/10'
-                      : 'text-gray-700 dark:text-gray-300 hover:text-primary hover:bg-primary/5'
+                      ? 'text-white bg-primary shadow-md'
+                      : 'text-gray-700 dark:text-gray-300 hover:text-white hover:bg-primary'
                   }`}
                 >
                   {link.label}

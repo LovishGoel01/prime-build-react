@@ -1,6 +1,6 @@
-
 import { useState, useEffect } from 'react';
 import ImageCarousel from '../components/ImageCarousel';
+import ProjectCarousel from '../components/ProjectCarousel';
 import ProductModal from '../components/ProductModal';
 import { products, Product } from '../data/products';
 
@@ -134,6 +134,9 @@ const Home = () => {
           </div>
         </div>
       </section>
+
+      {/* Projects Section */}
+      <ProjectCarousel />
 
       {/* Product Catalog Preview */}
       <section className="py-16 bg-white dark:bg-gray-900">
