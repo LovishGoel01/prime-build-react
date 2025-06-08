@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import ImageCarousel from '../components/ImageCarousel';
 import ProjectCarousel from '../components/ProjectCarousel';
@@ -178,9 +177,6 @@ const Home = () => {
             </h2>
             <p className="text-lg text-gray-600 dark:text-gray-300">
               High-quality construction materials and equipment for every project
-            </p>
-            <p className="text-sm text-gray-500 dark:text-gray-400 mt-2">
-              Set {currentProductIndex + 1} of {totalSets} (Auto-rotating every 3 seconds)
             </p>
           </div>
 
